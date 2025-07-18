@@ -25,23 +25,48 @@ public class TeamInputUtil {
 
         System.out.println("Ingrese " + count + " nombres de equipos para " + stage.name() + ":");
 
-        // Asegurarse de que el usuario ingrese la cantidad correcta de equipos
-        for (int i = 0; i < count; i++) {
+        int i = 0;
+        // Ciclo para ingresar los equipos hasta que se alcance la cantidad requerida
+        while (i < count) {
             String name;
-
-            // Ciclo hasta que se ingrese un nombre de equipo no vacio
-            do {
+            boolean isDuplicate;
+            try {
                 System.out.print("Equipo " + (i + 1) + ": ");
+                // Leer el nombre del equipo desde la entrada del usuario
                 name = scanner.nextLine().trim();
-                // Verificar si el nombre esta vacio
+                isDuplicate = false;
+                // Verificar si el nombre esta vacio o si ya fue ingresado
                 if (name.isEmpty()) {
-                    System.out.println("El nombre no puede estar vacio. Por favor, ingrese un nombre de equipo valido.");
+                    System.out.println("El nombre no puede estar vacio. Por favor, ingrese un nombre valido.");
+                    continue;
                 }
-            } while (name.isEmpty());
-
-            // Crear un nuevo equipo y agregarlo a la lista
-            teams.add(new Team(name));
+                // Verificar si el nombre ya fue ingresado
+                for (Team team : teams) {
+                    // Comparar el nombre del equipo ingresado con los nombres ya existentes
+                    if (team.getName().equalsIgnoreCase(name)) {
+                        System.out.println("El nombre ya fue ingresado. Por favor, ingrese un nombre unico.");
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+                // Si el nombre es un duplicado, continuar al siguiente ciclo
+                if (isDuplicate) {
+                    continue;
+                }
+                // Crear un nuevo equipo con el nombre ingresado y agregarlo a la lista
+                teams.add(new Team(name));
+                i++;
+            } catch (Exception e) {
+                // Mensaje para cualquier excepcion inesperada
+                System.out.println("Entrada invalida. Intente nuevamente.");
+            }
         }
+
+        // Verificar si la cantidad de equipos ingresados coincide con la cantidad esperada
+        if (teams.size() != count) {
+            System.out.println("La cantidad de equipos ingresados no coincide con la etapa. Se esperaban " + count + ".");
+        }
+
         // Retorna la lista de equipos ingresados
         return teams;
     }

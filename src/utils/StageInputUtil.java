@@ -24,14 +24,23 @@ public class StageInputUtil {
         
         // Ciclo para asegurar que el usuario ingrese una etapa valida
         while (selectedStage == null) {
-            System.out.print("Ingrese el nombre de la etapa: ");
-            String input = scanner.nextLine().trim().toUpperCase();
-            // Intentar convertir la entrada del usuario a un tipo de etapa
             try {
+                System.out.print("Ingrese el nombre de la etapa: ");
+                // Leer la entrada del usuario y convertirla a mayusculas para evitar problemas de mayusculas/minusculas
+                String input = scanner.nextLine().trim().toUpperCase();
+                // Verificar si la entrada esta vacia
+                if (input.isEmpty()) {
+                        System.out.println("La entrada no puede estar vacia. Intente nuevamente.");
+                        continue;
+                    }
+                // Intentar convertir la entrada del usuario a un tipo de etapa
                 selectedStage = StageType.valueOf(input);
             } catch (IllegalArgumentException e) {
                 // Mensaje si la etapa ingresada no es valida
                 System.out.println("Etapa invalida. Por favor, ingrese un nombre de etapa valido.");
+            } catch (Exception e) {
+                // Mensaje para cualquier otra excepcion inesperada
+                System.out.println("Entrada invalida. Intente nuevamente.");
             }
         }
         // Retorna la etapa seleccionada
