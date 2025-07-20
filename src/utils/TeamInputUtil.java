@@ -5,6 +5,10 @@ import model.Team;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.IOException;
+import exceptions.DuplicateTeamException;
+import exceptions.EmptyNameException;
+import utils.SerializationUtil;
 
 // Clase que maneja la entrada de equipos para una etapa del torneo
 public class TeamInputUtil {
@@ -29,45 +33,47 @@ public class TeamInputUtil {
         // Ciclo para ingresar los equipos hasta que se alcance la cantidad requerida
         while (i < count) {
             String name;
-            boolean isDuplicate;
             try {
-                System.out.print("Equipo " + (i + 1) + ": ");
                 // Leer el nombre del equipo desde la entrada del usuario
+                System.out.print("Equipo " + (i + 1) + ": ");
                 name = scanner.nextLine().trim();
-                isDuplicate = false;
-                // Verificar si el nombre esta vacio o si ya fue ingresado
+                // Validar que el nombre no este vacio
                 if (name.isEmpty()) {
-                    System.out.println("El nombre no puede estar vacio. Por favor, ingrese un nombre valido.");
-                    continue;
+                    // Lanzar excepcion si el nombre esta vacio
+                    throw new EmptyNameException("El nombre no puede estar vacio. Por favor, ingrese un nombre valido.");
                 }
-                // Verificar si el nombre ya fue ingresado
+                // Recorrer la lista de equipos para verificar duplicados
                 for (Team team : teams) {
-                    // Comparar el nombre del equipo ingresado con los nombres ya existentes
+                    // Verificar si el nombre ya fue ingresado
                     if (team.getName().equalsIgnoreCase(name)) {
-                        System.out.println("El nombre ya fue ingresado. Por favor, ingrese un nombre unico.");
-                        isDuplicate = true;
-                        break;
+                        // Lanzar excepcion si el nombre ya existe en la lista 
+                        throw new DuplicateTeamException("El nombre ya fue ingresado. Por favor, ingrese un nombre unico.");
                     }
                 }
-                // Si el nombre es un duplicado, continuar al siguiente ciclo
-                if (isDuplicate) {
-                    continue;
-                }
-                // Crear un nuevo equipo con el nombre ingresado y agregarlo a la lista
+                // Si el nombre es valido, crear un nuevo equipo y agregarlo a la lista
                 teams.add(new Team(name));
                 i++;
+            } catch (EmptyNameException e) {
+                // Mensaje de error si el nombre esta vacio
+                System.out.println(e.getMessage());
+            } catch (DuplicateTeamException e) {
+                // Mensaje de error si el nombre ya fue ingresado
+                System.out.println(e.getMessage());
             } catch (Exception e) {
-                // Mensaje para cualquier excepcion inesperada
+                // Mensaje de error para cualquier otra excepcion inesperada
                 System.out.println("Entrada invalida. Intente nuevamente.");
             }
         }
 
-        // Verificar si la cantidad de equipos ingresados coincide con la cantidad esperada
-        if (teams.size() != count) {
-            System.out.println("La cantidad de equipos ingresados no coincide con la etapa. Se esperaban " + count + ".");
+        try {
+            // Serializar la lista de equipos al finalizar
+            SerializationUtil.saveObject(teams, "teams.dat");
+        } catch (IOException e) {
+            // Mensaje de error si no se pudo guardar la lista de equipos
+            System.out.println("No se pudo guardar la lista de equipos serializada.");
         }
 
-        // Retorna la lista de equipos ingresados
+        // Retornar la lista de equipos ingresados
         return teams;
     }
 }

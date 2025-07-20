@@ -1,7 +1,9 @@
 package model;
 
+import java.io.Serializable;
+
 // Clase que representa un equipo en el torneo
-public class Team {
+public class Team implements Serializable {
     
     // Atributo del equipo
     private String name;
